@@ -18,6 +18,9 @@ type UserTransactions struct {
 
 func (c *Client) UserTransactions() ([]UserTransactions, error) {
 	req, err := c.newRequest("GET", fmt.Sprintf("/api/v1/users/transactions/trade?%s", c.params.Encode()), nil)
+	if err != nil {
+		return []UserTransactions{}, err
+	}
 	if err := c.auth(req); err != nil {
 		return []UserTransactions{}, err
 	}

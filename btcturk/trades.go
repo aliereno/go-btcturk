@@ -11,7 +11,9 @@ type Trade struct {
 
 func (c *Client) Trades() ([]Trade, error) {
 	req, err := c.newRequest("GET", fmt.Sprintf("/api/v2/trades?%s", c.params.Encode()), nil)
-
+	if err != nil {
+		return []Trade{}, err
+	}
 	var response []Trade
 	if _, err = c.do(req, &response); err != nil {
 		return []Trade{}, err

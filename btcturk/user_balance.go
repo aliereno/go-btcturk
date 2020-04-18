@@ -10,6 +10,9 @@ type Balance struct {
 
 func (c *Client) Balance() ([]Balance, error) {
 	req, err := c.newRequest("GET", "/api/v1/users/balances", c.body)
+	if err != nil {
+		return []Balance{}, err
+	}
 	if err := c.auth(req); err != nil {
 		return []Balance{}, err
 	}

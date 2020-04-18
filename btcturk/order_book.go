@@ -10,6 +10,9 @@ type OrderBook struct {
 
 func (c *Client) OrderBook() (OrderBook, error) {
 	req, err := c.newRequest("GET", fmt.Sprintf("/api/v2/orderbook?%s", c.params.Encode()), nil)
+	if err != nil {
+		return OrderBook{}, err
+	}
 
 	var response OrderBook
 	if _, err = c.do(req, &response); err != nil {

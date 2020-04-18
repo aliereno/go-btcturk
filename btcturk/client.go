@@ -26,6 +26,12 @@ type Client struct {
 	publicKey  string
 	privateKey string
 }
+type GeneralResponse struct {
+	Success bool        `json:"success"`
+	Message string      `json:"message"`
+	Code    int8        `json:"code"`
+	Data    interface{} `json:"data"`
+}
 
 func NewBTCTurkClient() *Client {
 	baseURL, _ := url.Parse(baseURL)
@@ -62,6 +68,22 @@ func (c *Client) newRequest(method, relURL string, body io.Reader) (*http.Reques
 	return req, nil
 }
 
+func (c *Client) newRequestCustomURL(method, relURL string, body io.Reader) (*http.Request, error) {
+	rel, err := url.Parse(relURL)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest(method, c.baseURL.ResolveReference(rel).String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req = req.WithContext(context.Background())
+
+	return req, nil
+}
+
 func (c *Client) do(r *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.client.Do(r)
 	if err != nil {
@@ -74,8 +96,18 @@ func (c *Client) do(r *http.Request, v interface{}) (*http.Response, error) {
 		c.clearRequest()
 	}()
 
-	if json.NewDecoder(resp.Body).Decode(v) != nil {
+	var response = &GeneralResponse{
+		Data: v,
+	}
+
+	if json.NewDecoder(resp.Body).Decode(response) != nil {
 		return nil, err
+	}
+
+	if response.Success == true {
+		v = response.Data
+	} else {
+		return nil, errors.New("response -> 'success = false'")
 	}
 
 	return resp, nil

@@ -2,6 +2,13 @@
 
 golang client for btcturk api
 
+<div align="center">
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/aliereno/go-btcturk)](https://goreportcard.com/report/github.com/aliereno/go-btcturk)
+[![HitCount](http://hits.dwyl.com/aliereno/go-btcturk.svg)](http://hits.dwyl.com/aliereno/go-btcturk)
+
+</div>
+
 #### This repo has been forked from [vural/go-btcturk](https://github.com/vural/go-btcturk) and has been improved for Btcturk's new api. So if you like this repo please give a star actual [repo](https://github.com/vural/go-btcturk).
 
 ## documentation
@@ -53,12 +60,12 @@ import (
 func main() {
     api := btcturk.NewBTCTurkClient()
     api.SetAuthKey("publicKey", "privateKey")
-    
-    api.Price(3500).
-        Amount(10).
-        PairSymbol(btcturk.ETHTRY).
-        PricePrecision(00).
-        TotalPrecision(00).
+
+    api.Quantity(0.001).
+        Price(50000).
+        StopPrice(0).
+        OrderMethod("limit").
+        PairSymbol(btcturk.BTCTRY).
         Buy()
 }
 

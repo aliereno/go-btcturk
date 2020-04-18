@@ -20,6 +20,9 @@ type Ticker struct {
 
 func (c *Client) Ticker() ([]Ticker, error) {
 	req, err := c.newRequest("GET", "/api/v2/ticker", nil)
+	if err != nil {
+		return []Ticker{}, err
+	}
 	var response []Ticker
 	if _, err = c.do(req, &response); err != nil {
 		return []Ticker{}, err
