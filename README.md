@@ -77,12 +77,14 @@ func main() {
 
     _, _ = api.Balance()
 
-    _, _ = api.Quantity(0.001).
-        Price(50000).
-        StopPrice(0).
-        OrderMethod("limit").
-        PairSymbol(btcturk.BTCTRY).
-        Buy()
+    _, _ = api.Buy(&btcturk.OrderInput{
+                    Quantity:         0.001,
+                    Price:            50000,
+                    StopPrice:  	  0,
+                    NewOrderClientId: "Go test",
+                    OrderMethod:      "limit",
+                    PairSymbol:       btcturk.BTCTRY,
+                })
 }
 
 ```

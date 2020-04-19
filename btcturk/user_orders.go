@@ -79,8 +79,21 @@ type OrderType struct {
 	Amount   float64 `json:"amount"`
 }
 
+type OrderInput struct {
+	Quantity         float64 `json:"quantity"`
+	Price            float64 `json:"price"`
+	StopPrice        float64 `json:"stopPrice"`
+	NewOrderClientId string  `json:"newOrderClientId"`
+	OrderMethod      string  `json:"orderMethod"`
+	OrderType        string  `json:"orderType"`
+	PairSymbol       string  `json:"pairSymbol"`
+}
+
 func (c *Client) OpenOrders() ([]OpenOrders, error) {
 	jsonString, err := json.Marshal(c.params)
+	if err != nil {
+		return []OpenOrders{}, err
+	}
 	req, err := c.newRequest("GET", "/api/v1/openOrders", bytes.NewBuffer(jsonString))
 	if err != nil {
 		return []OpenOrders{}, err
@@ -108,7 +121,7 @@ func (c *Client) CancelOrder() (bool, error) {
 
 	var response GeneralResponse
 
-	// TODO
+	// TODO : solve
 	// API returns `"code":""`
 	// my code expects `"code":0` an integer
 	// so it will return error
@@ -119,9 +132,9 @@ func (c *Client) CancelOrder() (bool, error) {
 	return response.Success, nil
 }
 
-func (c *Client) Buy() (OrderType, error) {
-	c.params.Add("orderType", "buy")
-	jsonString, err := json.Marshal(c.params)
+func (c *Client) Buy(o *OrderInput) (OrderType, error) {
+	o.OrderType = "buy"
+	jsonString, err := json.Marshal(o)
 	if err != nil {
 		return OrderType{}, err
 	}
@@ -142,9 +155,9 @@ func (c *Client) Buy() (OrderType, error) {
 	return response, nil
 }
 
-func (c *Client) Sell() (OrderType, error) {
-	c.params.Add("orderType", "sell")
-	jsonString, err := json.Marshal(c.params)
+func (c *Client) Sell(o *OrderInput) (OrderType, error) {
+	o.OrderType = "sell"
+	jsonString, err := json.Marshal(o)
 	if err != nil {
 		return OrderType{}, err
 	}
