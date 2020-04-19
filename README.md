@@ -47,9 +47,8 @@ func main() {
 
 ```
 
-## Passing params
+## Examples
 
-[Endpoint Params](https://github.com/aliereno/go-btcturk/blob/master/btcturk/params.go)
 ```go
 package main
 
@@ -59,9 +58,26 @@ import (
 
 func main() {
     api := btcturk.NewBTCTurkClient()
-    api.SetAuthKey("publicKey", "privateKey")
 
-    api.Quantity(0.001).
+    //PUBLIC ENDPOINTS
+
+    //TICKER
+    _, _ = api.PairSymbol(btcturk.BTCTRY).Ticker()
+
+    //ORDER BOOK
+    _, _ = api.PairSymbol(btcturk.BTCTRY).Limit(10).OrderBook() // limit optional
+
+    //TRADES
+    _, _ = api.PairSymbol(btcturk.BTCTRY).Trades()
+
+
+    //PRIVATE ENDPOINTS
+
+    _, _ = api.SetAuthKey("publicKey", "privateKey")
+
+    _, _ = api.Balance()
+
+    _, _ = api.Quantity(0.001).
         Price(50000).
         StopPrice(0).
         OrderMethod("limit").

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 const (
@@ -81,7 +80,8 @@ type OrderType struct {
 }
 
 func (c *Client) OpenOrders() ([]OpenOrders, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("/api/v1/openOrders?%s", c.params.Encode()), nil)
+	jsonString, err := json.Marshal(c.params)
+	req, err := c.newRequest("GET", "/api/v1/openOrders", bytes.NewBuffer(jsonString))
 	if err != nil {
 		return []OpenOrders{}, err
 	}
@@ -98,9 +98,7 @@ func (c *Client) OpenOrders() ([]OpenOrders, error) {
 }
 
 func (c *Client) CancelOrder() (bool, error) {
-	c.body = strings.NewReader(c.params.Encode())
-
-	req, err := c.newRequest("POST", "/api/v1/order", c.body)
+	req, err := c.newRequest("DELETE", fmt.Sprintf("/api/v1/order?%s", c.params.Encode()), c.body)
 	if err != nil {
 		return false, err
 	}
@@ -109,6 +107,11 @@ func (c *Client) CancelOrder() (bool, error) {
 	}
 
 	var response GeneralResponse
+
+	// TODO
+	// API returns `"code":""`
+	// my code expects `"code":0` an integer
+	// so it will return error
 	if _, err = c.do(req, &response); err != nil {
 		return false, err
 	}
@@ -119,6 +122,9 @@ func (c *Client) CancelOrder() (bool, error) {
 func (c *Client) Buy() (OrderType, error) {
 	c.params.Add("orderType", "buy")
 	jsonString, err := json.Marshal(c.params)
+	if err != nil {
+		return OrderType{}, err
+	}
 
 	req, err := c.newRequest("POST", "/api/v1/order", bytes.NewBuffer(jsonString))
 	if err != nil {
@@ -127,8 +133,6 @@ func (c *Client) Buy() (OrderType, error) {
 	if err := c.auth(req); err != nil {
 		return OrderType{}, err
 	}
-
-	req.Header.Add("content-type", "application/json")
 
 	var response OrderType
 	if _, err = c.do(req, &response); err != nil {
@@ -141,6 +145,9 @@ func (c *Client) Buy() (OrderType, error) {
 func (c *Client) Sell() (OrderType, error) {
 	c.params.Add("orderType", "sell")
 	jsonString, err := json.Marshal(c.params)
+	if err != nil {
+		return OrderType{}, err
+	}
 
 	req, err := c.newRequest("POST", "/api/v1/order", bytes.NewBuffer(jsonString))
 	if err != nil {
@@ -149,8 +156,6 @@ func (c *Client) Sell() (OrderType, error) {
 	if err := c.auth(req); err != nil {
 		return OrderType{}, err
 	}
-
-	req.Header.Add("content-type", "application/json")
 
 	var response OrderType
 	if _, err = c.do(req, &response); err != nil {

@@ -47,6 +47,12 @@ func (c *Client) PairSymbol(v string) *Client {
 	return c
 }
 
+// Custom Param
+func (c *Client) AddCustomParam(k string, v string) *Client {
+	c.params.Add(k, v)
+	return c
+}
+
 func (c *Client) addParamInt(key string, value int) *Client {
 	c.params.Add(key, strconv.Itoa(value))
 	return c

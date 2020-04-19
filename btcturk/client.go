@@ -28,8 +28,8 @@ type Client struct {
 }
 type GeneralResponse struct {
 	Success bool        `json:"success"`
-	Message string      `json:"message"`
-	Code    int8        `json:"code"`
+	Message *string     `json:"message"`
+	Code    int         `json:"code"`
 	Data    interface{} `json:"data"`
 }
 
@@ -68,22 +68,6 @@ func (c *Client) newRequest(method, relURL string, body io.Reader) (*http.Reques
 	return req, nil
 }
 
-func (c *Client) newRequestCustomURL(method, relURL string, body io.Reader) (*http.Request, error) {
-	rel, err := url.Parse(relURL)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest(method, c.baseURL.ResolveReference(rel).String(), body)
-	if err != nil {
-		return nil, err
-	}
-
-	req = req.WithContext(context.Background())
-
-	return req, nil
-}
-
 func (c *Client) do(r *http.Request, v interface{}) (*http.Response, error) {
 	resp, err := c.client.Do(r)
 	if err != nil {
@@ -104,10 +88,10 @@ func (c *Client) do(r *http.Request, v interface{}) (*http.Response, error) {
 		return nil, err
 	}
 
-	if response.Success == true {
+	if response.Code == 0 {
 		v = response.Data
 	} else {
-		return nil, errors.New("response -> 'success = false'")
+		return nil, errors.New(*response.Message)
 	}
 
 	return resp, nil
@@ -115,11 +99,11 @@ func (c *Client) do(r *http.Request, v interface{}) (*http.Response, error) {
 
 func (c *Client) auth(req *http.Request) error {
 	if c.privateKey == "" {
-		return errors.New("Private Key is not set")
+		return errors.New("private key is not set")
 	}
 
 	if c.publicKey == "" {
-		return errors.New("Public Key is not set")
+		return errors.New("public key is not set")
 	}
 
 	key, err := base64.StdEncoding.DecodeString(c.privateKey)
@@ -127,7 +111,7 @@ func (c *Client) auth(req *http.Request) error {
 		return err
 	}
 
-	stamp := fmt.Sprint(time.Now().Unix())
+	stamp := fmt.Sprint(time.Now().Unix() * 1000)
 	message := c.publicKey + stamp
 
 	h := hmac.New(sha256.New, key)
@@ -136,6 +120,7 @@ func (c *Client) auth(req *http.Request) error {
 	req.Header.Set("X-PCK", c.publicKey)
 	req.Header.Set("X-Stamp", stamp)
 	req.Header.Set("X-Signature", base64.StdEncoding.EncodeToString(h.Sum(nil)))
+	req.Header.Add("Content-Type", "application/json")
 	return nil
 }
 

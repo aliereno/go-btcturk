@@ -3,10 +3,15 @@ package btcturk
 import "fmt"
 
 type Trade struct {
-	TimeStamp float64 `json:"date"`
-	TID       string  `json:"tid"`
-	Price     string  `json:"price"`
-	Amount    string  `json:"amount"`
+	Pair           string  `json:"pair"`
+	PairNormalized string  `json:"pairNormalized"`
+	Numerator      string  `json:"numerator"`
+	Denominator    string  `json:"denominator"`
+	TimeStamp      float64 `json:"date"`
+	TID            string  `json:"tid"`
+	Price          string  `json:"price"`
+	Amount         string  `json:"amount"`
+	Side           string  `json:"side"`
 }
 
 func (c *Client) Trades() ([]Trade, error) {
