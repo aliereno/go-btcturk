@@ -128,3 +128,7 @@ func (c *Client) clearRequest() {
 	c.params = url.Values{}
 	c.body = nil
 }
+
+func (c *Client) Version() string {
+	return "0.0.1"
+}

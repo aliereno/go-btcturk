@@ -3,7 +3,10 @@ package btcturk
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 )
 
 const (
@@ -57,7 +60,7 @@ const (
 	StopLimitOrder string = "stoplimit"
 )
 
-type OpenOrders struct {
+type OpenOrderModel struct {
 	ID            int32   `json:"id"`
 	Price         string  `json:"price"`
 	Amount        string  `json:"amount"`
@@ -69,6 +72,11 @@ type OpenOrders struct {
 	DateTime      float64 `json:"datetime"`
 	UpdateTime    float64 `json:"updateTime"`
 	Status        string  `json:"status"`
+}
+
+type OpenOrderResult struct {
+	Asks []OpenOrderModel `json:"asks"`
+	Bids []OpenOrderModel `json:"bids"`
 }
 
 type OrderType struct {
@@ -89,47 +97,25 @@ type OrderInput struct {
 	PairSymbol       string  `json:"pairSymbol"`
 }
 
-func (c *Client) OpenOrders() ([]OpenOrders, error) {
+func (c *Client) OpenOrders() ([]OpenOrderResult, error) {
 	jsonString, err := json.Marshal(c.params)
 	if err != nil {
-		return []OpenOrders{}, err
+		return []OpenOrderResult{}, err
 	}
 	req, err := c.newRequest("GET", "/api/v1/openOrders", bytes.NewBuffer(jsonString))
 	if err != nil {
-		return []OpenOrders{}, err
+		return []OpenOrderResult{}, err
 	}
 	if err := c.auth(req); err != nil {
-		return []OpenOrders{}, err
+		return []OpenOrderResult{}, err
 	}
 
-	var response []OpenOrders
+	var response []OpenOrderResult
 	if _, err = c.do(req, &response); err != nil {
-		return []OpenOrders{}, err
+		return []OpenOrderResult{}, err
 	}
 
 	return response, nil
-}
-
-func (c *Client) CancelOrder() (bool, error) {
-	req, err := c.newRequest("DELETE", fmt.Sprintf("/api/v1/order?%s", c.params.Encode()), c.body)
-	if err != nil {
-		return false, err
-	}
-	if err := c.auth(req); err != nil {
-		return false, err
-	}
-
-	var response GeneralResponse
-
-	// TODO : solve
-	// API returns `"code":""`
-	// my code expects `"code":0` an integer
-	// so it will return error
-	if _, err = c.do(req, &response); err != nil {
-		return false, err
-	}
-
-	return response.Success, nil
 }
 
 func (c *Client) Buy(o *OrderInput) (OrderType, error) {
@@ -176,4 +162,38 @@ func (c *Client) Sell(o *OrderInput) (OrderType, error) {
 	}
 
 	return response, nil
+}
+
+func (c *Client) CancelOrder() (bool, error) {
+	req, err := c.newRequest("DELETE", fmt.Sprintf("/api/v1/order?%s", c.params.Encode()), c.body)
+	if err != nil {
+		return false, err
+	}
+	if err := c.auth(req); err != nil {
+		return false, err
+	}
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return false, err
+	}
+
+	defer func() {
+		io.Copy(ioutil.Discard, resp.Body)
+		resp.Body.Close()
+		c.clearRequest()
+	}()
+
+	var response = &GeneralResponse{}
+
+	if json.NewDecoder(resp.Body).Decode(response) != nil {
+		return false, err
+	}
+
+	if response.Success == true {
+		return true, nil
+	} else {
+		return false, errors.New(*response.Message)
+	}
+
 }
