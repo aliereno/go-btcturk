@@ -1,5 +1,6 @@
 package btcturk
 
+// https://docs.btcturk.com/#ticker
 type Ticker struct {
 	Pair              string  `json:"pair"`
 	PairNormalized    string  `json:"pairNormalized"`
@@ -18,6 +19,11 @@ type Ticker struct {
 	NumeratorSymbol   string  `json:"numeratorSymbol"`
 }
 
+// If pairSymbol is not set, ticker for all pairs will be returned in a json array.
+// Or
+// GET ?pairSymbol=BTC_TRY
+// Or
+// GET ?symbol=USDT
 func (c *Client) Ticker() ([]Ticker, error) {
 	req, err := c.newRequest("GET", "/api/v2/ticker", nil)
 	if err != nil {

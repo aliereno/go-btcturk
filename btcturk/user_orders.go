@@ -97,22 +97,22 @@ type OrderInput struct {
 	PairSymbol       string  `json:"pairSymbol"`
 }
 
-func (c *Client) OpenOrders() ([]OpenOrderResult, error) {
+func (c *Client) OpenOrders() (OpenOrderResult, error) {
 	jsonString, err := json.Marshal(c.params)
 	if err != nil {
-		return []OpenOrderResult{}, err
+		return OpenOrderResult{}, err
 	}
 	req, err := c.newRequest("GET", "/api/v1/openOrders", bytes.NewBuffer(jsonString))
 	if err != nil {
-		return []OpenOrderResult{}, err
+		return OpenOrderResult{}, err
 	}
 	if err := c.auth(req); err != nil {
-		return []OpenOrderResult{}, err
+		return OpenOrderResult{}, err
 	}
 
-	var response []OpenOrderResult
+	var response OpenOrderResult
 	if _, err = c.do(req, &response); err != nil {
-		return []OpenOrderResult{}, err
+		return OpenOrderResult{}, err
 	}
 
 	return response, nil

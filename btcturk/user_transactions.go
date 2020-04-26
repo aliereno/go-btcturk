@@ -4,6 +4,7 @@ import (
 	"fmt"
 )
 
+// https://docs.btcturk.com/#user-transactions
 type UserTransactions struct {
 	Price             float64 `json:"price"`
 	NumeratorSymbol   string  `json:"numeratorSymbol"`
@@ -16,6 +17,7 @@ type UserTransactions struct {
 	Tax               float64 `json:"tax"`
 }
 
+// Example Params : ?type=buy&type=sell&symbol=btc&symbol=try&symbol=usdt
 func (c *Client) UserTransactions() ([]UserTransactions, error) {
 	req, err := c.newRequest("GET", fmt.Sprintf("/api/v1/users/transactions/trade?%s", c.params.Encode()), nil)
 	if err != nil {

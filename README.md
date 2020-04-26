@@ -27,6 +27,7 @@ package main
 
 import (
 	"github.com/aliereno/go-btcturk/btcturk"
+	"os"
 )
 
 func main() {
@@ -53,7 +54,8 @@ func main() {
 package main
 
 import (
-	"github.com/aliereno/btcturk/btcturk"
+	"github.com/aliereno/go-btcturk/btcturk"
+	"os"
 )
 
 func main() {
@@ -73,9 +75,11 @@ func main() {
 
     //PRIVATE ENDPOINTS
 
-    _, _ = api.SetAuthKey("publicKey", "privateKey")
+    api.SetAuthKey("publicKey", "privateKey")
 
     _, _ = api.Balance()
+
+    _, _ = api.OpenOrders()
 
     _, _ = api.Buy(&btcturk.OrderInput{
                     Quantity:         0.001,
@@ -85,6 +89,8 @@ func main() {
                     OrderMethod:      "limit",
                     PairSymbol:       btcturk.BTCTRY,
                 })
+
+	_, _  = api.OrderID(0000000000).CancelOrder()
 }
 
 ```
