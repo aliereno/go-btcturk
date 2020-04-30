@@ -11,7 +11,7 @@ type UserTransactions struct {
 	DenominatorSymbol string  `json:"denominatorSymbol"`
 	OrderType         string  `json:"orderType"`
 	ID                string  `json:"id"`
-	Timestamp         float64 `json:"timestamp"`
+	Timestamp         int64   `json:"timestamp"`
 	Amount            float64 `json:"amount"`
 	Fee               float64 `json:"fee"`
 	Tax               float64 `json:"tax"`
