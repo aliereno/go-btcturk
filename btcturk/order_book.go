@@ -4,7 +4,7 @@ import "fmt"
 
 // https://docs.btcturk.com/#order-book
 type OrderBook struct {
-	TimeStamp int64      `json:"timestamp"`
+	TimeStamp float64    `json:"timestamp"`
 	Bids      [][]string `json:"bids"`
 	Asks      [][]string `json:"asks"`
 }

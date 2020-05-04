@@ -4,7 +4,7 @@ package btcturk
 type Ticker struct {
 	Pair              string  `json:"pair"`
 	PairNormalized    string  `json:"pairNormalized"`
-	Timestamp         int64   `json:"timestamp"`
+	Timestamp         float64 `json:"timestamp"`
 	Last              float64 `json:"last"`
 	High              float64 `json:"high"`
 	Low               float64 `json:"low"`

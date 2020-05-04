@@ -3,7 +3,7 @@ package btcturk
 //TODO: ohcl
 //type Ohcl struct {
 //	Pair                  string  `json:"pair"`
-//	TimeStamp             int64 `json:"time"`
+//	TimeStamp             float64 `json:"time"`
 //	Open                  float64 `json:"open"`
 //	High                  float64 `json:"high"`
 //	Low                   float64 `json:"low"`

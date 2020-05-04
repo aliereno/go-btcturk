@@ -4,15 +4,15 @@ import "fmt"
 
 // https://docs.btcturk.com/#trades
 type Trade struct {
-	Pair           string `json:"pair"`
-	PairNormalized string `json:"pairNormalized"`
-	Numerator      string `json:"numerator"`
-	Denominator    string `json:"denominator"`
-	TimeStamp      int64  `json:"date"`
-	TID            string `json:"tid"`
-	Price          string `json:"price"`
-	Amount         string `json:"amount"`
-	Side           string `json:"side"`
+	Pair           string  `json:"pair"`
+	PairNormalized string  `json:"pairNormalized"`
+	Numerator      string  `json:"numerator"`
+	Denominator    string  `json:"denominator"`
+	TimeStamp      float64 `json:"date"`
+	TID            string  `json:"tid"`
+	Price          string  `json:"price"`
+	Amount         string  `json:"amount"`
+	Side           string  `json:"side"`
 }
 
 // GET ?pairSymbol=BTC_TRY
