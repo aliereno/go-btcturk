@@ -1,5 +1,7 @@
 package btcturk
 
+import "fmt"
+
 // https://docs.btcturk.com/#ticker
 type Ticker struct {
 	Pair              string  `json:"pair"`
@@ -25,7 +27,7 @@ type Ticker struct {
 // Or
 // GET ?symbol=USDT
 func (c *Client) Ticker() ([]Ticker, error) {
-	req, err := c.newRequest("GET", "/api/v2/ticker", nil)
+	req, err := c.newRequest("GET", fmt.Sprintf("/api/v2/ticker?%s", c.params.Encode()), nil)
 	if err != nil {
 		return []Ticker{}, err
 	}
