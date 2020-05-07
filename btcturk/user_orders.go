@@ -79,12 +79,17 @@ type OpenOrderResult struct {
 	Bids []OpenOrderModel `json:"bids"`
 }
 
-type OrderType struct {
-	ID       string  `json:"id"`
-	DateTime string  `json:"datetime"`
-	Type     string  `json:"type"`
-	Price    float64 `json:"price"`
-	Amount   float64 `json:"amount"`
+type OrderResult struct {
+	ID                   int32  `json:"id"`
+	DateTime             int32  `json:"datetime"`
+	Type                 string `json:"type"`
+	Method               string `json:"method"`
+	Price                string `json:"price"`
+	StopPrice            string `json:"stopPrice"`
+	Quantity             string `json:"quantity"`
+	PairSymbol           string `json:"pairSymbol"`
+	PairSymbolNormalized string `json:"pairSymbolNormalized"`
+	NewOrderClientID     string `json:"newOrderClientId"`
 }
 
 type OrderInput struct {
@@ -118,47 +123,47 @@ func (c *Client) OpenOrders() (OpenOrderResult, error) {
 	return response, nil
 }
 
-func (c *Client) Buy(o *OrderInput) (OrderType, error) {
+func (c *Client) Buy(o *OrderInput) (OrderResult, error) {
 	o.OrderType = "buy"
 	jsonString, err := json.Marshal(o)
 	if err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
 	req, err := c.newRequest("POST", "/api/v1/order", bytes.NewBuffer(jsonString))
 	if err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 	if err := c.auth(req); err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
-	var response OrderType
+	var response OrderResult
 	if _, err = c.do(req, &response); err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
 	return response, nil
 }
 
-func (c *Client) Sell(o *OrderInput) (OrderType, error) {
+func (c *Client) Sell(o *OrderInput) (OrderResult, error) {
 	o.OrderType = "sell"
 	jsonString, err := json.Marshal(o)
 	if err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
 	req, err := c.newRequest("POST", "/api/v1/order", bytes.NewBuffer(jsonString))
 	if err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 	if err := c.auth(req); err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
-	var response OrderType
+	var response OrderResult
 	if _, err = c.do(req, &response); err != nil {
-		return OrderType{}, err
+		return OrderResult{}, err
 	}
 
 	return response, nil
